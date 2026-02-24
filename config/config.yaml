@@ -1,0 +1,65 @@
+# config.yaml (或类似的配置文件)
+
+Global:
+  # 训练的随机种子，用于保证结果可复现性
+  Seed: 42
+  # 训练的批次大小
+  Batch_Size: 64
+  # 学习率
+  LR: 1e-4
+  # 最大训练周期数
+  Max_Epoch: 100
+
+Data:
+  # 数据集的基础路径（例如，存放 biosnap, drugbank 等数据集的目录）
+  Path: "./data"
+
+Result:
+  # 结果输出的基础目录
+  Output_Dir: "./results"
+  Save_Model: True
+
+# DTIModel 中可能需要的参数，用于定义药物编码器的结构
+Drug:
+  # 药物（分子图）的最大节点数（原子数），用于 padding
+  Max_Nodes: 290
+  Node_In_Feat: 75
+  Padding: True
+  Hidden_Layers: [128, 128, 128]
+  Node_In_Embedding: 128
+  GCN_Activation: null
+
+# DTIModel 中可能需要的参数，用于定义蛋白质编码器的结构
+Protein:
+  # 蛋白质（序列）的最大长度，用于 padding
+  Max_Length: 1200
+  Embedding_Dim: 128
+  Num_Filters: [128, 128, 128]
+  Kernel_Size: [3,6,9]
+  Padding: True
+  After_CNN_Length: 1185
+
+MLP:
+  In_Dim: 128
+  Hidden_Dim: 512
+  Out_Dim: 128
+  Binary: 2
+
+# 差分注意力机制 (SRADiffAttn)
+SDATTN:
+  Embed_Dim: 128           # 嵌入维度，需与 Hidden_Dim 保持一致
+  Num_Heads: 4             # 注意力头数
+  Num_KV_Heads: 2          # KV 共享头数
+  SR_Ratio: 2              # 空间还原比例
+  Depth: 2                 # 注意力层堆叠深度 (range(configs.SDATTN.Depth))
+
+# 多生物交叉注意力 (MBCA)
+MBCA:
+  Hidden_Size: 128         # 注意力层隐藏维度
+  Num_Heads: 8             # 需能被 Hidden_Size 整除
+
+BLOCK:
+  n_embd: 128           # 必须与你 DTIModel 中的维度对齐
+  n_head: 8             # 128 / 4 = 32 (每个 head 的维度)
+  bias: True            # 建议开启偏置以增强拟合能力
+  dropout: 0.1          # 防过拟合
